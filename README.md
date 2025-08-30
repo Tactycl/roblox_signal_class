@@ -77,6 +77,10 @@ end)
 -- Fire the signal
 mySignal:Fire("Hello World")
 
+task.delay(1, function()
+  mySignal:Fire("Hey!")
+end)
+
 -- Wait for the signal
 local msg = mySignal:Wait()
 print("Wait received:", msg)
