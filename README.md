@@ -1,25 +1,87 @@
-# Roblox Signal Class
+# Roblox Signal Class  
 
-This class is supposed to be used as a simple way for custom Signals like the roblox RBXScriptSignal
+The **Signal Class** is a lightweight utility designed to create **custom event systems** in Roblox, similar to `RBXScriptSignal`. It provides an intuitive API to manage connections, fire events, and track listener states with optional priority handling.  
 
-# API
+---
 
-.new(), returns (Signal) -> This returns a new Signal object<br/>
+## Key Benefits  
+- Simplifies custom event creation and management.  
+- Supports one-time (`Once`) and persistent listeners.  
+- Prioritized listener invocation.  
+- Efficient connection management with full cleanup capabilities.  
 
-:Connect(callback: () -> (), priority: number?), returns (conn: Connection) -> returns a Connection object<br/>
+---
 
-:Once(callback: () -> ()), returns (conn: Connection) -> returns a Connection object, which is only fired once and automatically disconnected after<br/>
+## API Reference  
 
-:Fire(...), returns none -> fires all currently connected Connections, Connection Objects made with :Once will be cleared, Connections are called in order set by priority<br/>
+### Constructor  
+- **`.new(): Signal`**  
+  Creates a new Signal object.  
 
-:Wait(), returns (...: any) -> similar to Connect, but it returns the values instead of calling a function and yields until fired<br/>
+---
 
-:DisconnectAll(), returns none -> Disconnects all Connection Objects<br/>
+### Connecting Listeners  
+- **`:Connect(callback: () -> (), priority: number?): Connection`**  
+  Connects a persistent listener to the signal. Optionally, define a priority to control call order.  
 
-:HasConnections(), returns (boolean) -> Returns true if Signal contains Connection Objects, otherwise false<br/>
+- **`:Once(callback: () -> ()): Connection`**  
+  Connects a listener that is **automatically disconnected after the first invocation**.  
 
-:GetConnectionCount(), returns (number) -> Returns amount of connected Connection Objects<br/>
+---
 
-:IsConnected(callback: () -> ()), returns (boolean) -> Returns true if callback has been connected via :Connect or :Once, otherwise false<br/>
+### Firing Events  
+- **`:Fire(...: any)`**  
+  Fires all connected listeners, passing any arguments provided.  
+  - Listeners connected with `:Once` are automatically removed after firing.  
+  - Listeners are invoked in **priority order** if specified.  
 
-:Destroy(), returns none -> Disconnects all Connections and clears itself<br/>
+- **`:Wait(): (...: any)`**  
+  Yields until the signal is fired and **returns the arguments** passed to `:Fire`.  
+
+---
+
+### Connection Management  
+- **`:DisconnectAll()`**  
+  Disconnects **all listeners** attached to the signal.  
+
+- **`:HasConnections(): boolean`**  
+  Returns `true` if the signal has any active connections.  
+
+- **`:GetConnectionCount(): number`**  
+  Returns the **number of active connections**.  
+
+- **`:IsConnected(callback: () -> ()): boolean`**  
+  Returns `true` if the provided callback is currently connected via `:Connect` or `:Once`.  
+
+- **`:Destroy()`**  
+  Cleans up the signal by disconnecting all listeners and clearing internal references.  
+
+---
+
+## Example Usage  
+
+```lua
+local Signal = require(path.to.Signal)
+local mySignal = Signal.new()
+
+-- Connect a listener
+local conn = mySignal:Connect(function(msg)
+    print("Received:", msg)
+end)
+
+-- Connect a one-time listener
+mySignal:Once(function(msg)
+    print("This prints only once:", msg)
+end)
+
+-- Fire the signal
+mySignal:Fire("Hello World")
+
+-- Wait for the signal
+local msg = mySignal:Wait()
+print("Wait received:", msg)
+
+-- Cleanup
+mySignal:DisconnectAll()
+mySignal:Destroy()
+```
