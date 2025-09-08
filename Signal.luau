@@ -1,5 +1,7 @@
 --!strict
 
+export type Callback = (any) -> (any)
+
 export type Connection = {
 	_connected: boolean,
 	Connected: boolean,
@@ -7,14 +9,14 @@ export type Connection = {
 }
 
 export type Listener = {
-	callback: (any) -> (any),
+	callback: Callback,
 	connection: Connection,
 	priority: number,
 }
 
 export type Signal = {
 	_listeners: {Listener},
-	_callback: (any) -> (any)?,
+	_callback: Callback?,
 	
 	Connect: (self: Signal, callback: () -> (), priority: number?) -> Connection,
 	Once: (self: Signal, callback: () -> ()) -> Connection,
@@ -38,7 +40,7 @@ function Signal.new(): Signal
 	return (self:: unknown):: Signal
 end
 
-function Signal:Connect(callback: () -> (), priority: number?): Connection
+function Signal:Connect(callback: Callback, priority: number?): Connection
 	local connection: Connection = {
 		_connected = true,
 		Disconnect = function(self)
@@ -58,7 +60,7 @@ function Signal:Connect(callback: () -> (), priority: number?): Connection
 	return connection
 end
 
-function Signal:Once(callback: () -> ()): Connection
+function Signal:Once(callback: Callback): Connection
 	local conn
 	conn = self:Connect(function(...)
 		conn:Disconnect()
@@ -95,8 +97,8 @@ function Signal:Invoke(...)
 	end
 end
 
-function Signal:SetCallback(fn: (any) -> (any)?)
-	self._callback = fn
+function Signal:SetCallback(callback: Callback?)
+	self._callback = callback
 end
 
 function Signal:Wait(): any
