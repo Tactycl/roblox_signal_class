@@ -7,7 +7,7 @@ export type Connection = {
 }
 
 export type Listener = {
-	callback: () -> (),
+	callback: (any) -> (any),
 	connection: Connection,
 	priority: number,
 }
