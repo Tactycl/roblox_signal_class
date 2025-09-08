@@ -27,7 +27,7 @@ The **Signal Class** is a lightweight utility designed to create **custom event 
 - **`:Once(callback: Callback): Connection`**  
   Connects a listener that is **automatically disconnected after the first invocation**.  
 
-- **`:SetCallback(callback: Callback?)`**
+- **`:SetCallback(callback: Callback?)`**  
   Sets the current callback which is fired with `:Invoke`, useful for Signals where you only want one connection present
 
 ---
@@ -38,7 +38,7 @@ The **Signal Class** is a lightweight utility designed to create **custom event 
   - Listeners connected with `:Once` are automatically removed after firing.  
   - Listeners are invoked in **priority order** if specified.  
 
-- **`:Invoke(...: any)`**
+- **`:Invoke(...: any)`**  
   Fires the set callback, passing any arguments provided.
 
 - **`:Wait(): (...: any)`**  
