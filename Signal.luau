@@ -14,6 +14,16 @@ export type Listener = {
 
 export type Signal = {
 	_listeners: {Listener},
+	
+	Connect: (self: Signal, callback: () -> (), priority: number?) -> Connection,
+	Once: (self: Signal, callback: () -> ()) -> Connection,
+	Fire: (self: Signal, ...any) -> (),
+	Wait: (self: Signal) -> (...any),
+	DisconnectAll: (self: Signal) -> (),
+	HasConnections: (self: Signal) -> (boolean),
+	GetConnectionCount: (self: Signal) -> (number),
+	IsConnected: (self: Signal, callback: () -> ()) -> (boolean),
+	Destroy: (self: Signal) -> (),
 }
 
 local Signal = {}
@@ -34,13 +44,13 @@ function Signal:Connect(callback: () -> (), priority: number?): Connection
 		end,
 		Connected = true,
 	}
-	
+
 	local listener: Listener = {
 		callback = callback,
 		connection = connection,
 		priority = priority or 1,
 	}
-	
+
 	table.insert(self._listeners, listener)
 	return connection
 end
@@ -51,7 +61,7 @@ function Signal:Once(callback: () -> ()): Connection
 		conn:Disconnect()
 		callback(...)
 	end)
-	
+
 	return conn
 end
 
@@ -59,14 +69,14 @@ function Signal:Fire(...)
 	table.sort(self._listeners, function(a: Listener, b: Listener)
 		return a.priority > b.priority
 	end)
-	
+
 	for i = #self._listeners, 1, -1 do
 		local listener = self._listeners[i]
 		if not listener.connection._connected then
 			table.remove(self._listeners, i)
 			continue
 		end
-		
+
 		task.spawn(function(...)
 			local success: boolean, err: any = xpcall(listener.callback, debug.traceback, ...)
 			if not success then
@@ -99,7 +109,7 @@ end
 
 function Signal:GetConnectionCount(): number
 	local amount = 0
-	
+
 	for _, listener in self._listeners do
 		if not listener.connection._connected then
 			continue
@@ -107,7 +117,7 @@ function Signal:GetConnectionCount(): number
 
 		amount += 1
 	end
-	
+
 	return amount
 end
 
@@ -117,7 +127,7 @@ function Signal:IsConnected(callback: () -> ()): boolean
 			return true
 		end
 	end
-	
+
 	return false
 end
 
