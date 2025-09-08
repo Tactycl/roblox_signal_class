@@ -12,12 +12,14 @@ export type Listener = {
 	priority: number,
 }
 
+export type InvokeResult = {any} | any
+
 export type Signal = {
 	_listeners: {Listener},
 	
 	Connect: (self: Signal, callback: () -> (), priority: number?) -> Connection,
 	Once: (self: Signal, callback: () -> ()) -> Connection,
-	Fire: (self: Signal, ...any) -> (),
+	Fire: (self: Signal, ...any) -> (InvokeResult),
 	Wait: (self: Signal) -> (...any),
 	DisconnectAll: (self: Signal) -> (),
 	HasConnections: (self: Signal) -> (boolean),
@@ -65,11 +67,12 @@ function Signal:Once(callback: () -> ()): Connection
 	return conn
 end
 
-function Signal:Fire(...)
+function Signal:Fire(...): InvokeResult
 	table.sort(self._listeners, function(a: Listener, b: Listener)
 		return a.priority > b.priority
 	end)
-
+	
+	local results = {}
 	for i = #self._listeners, 1, -1 do
 		local listener = self._listeners[i]
 		if not listener.connection._connected then
@@ -84,6 +87,15 @@ function Signal:Fire(...)
 			end
 		end, ...)
 	end
+	
+	if #results == 1 then
+		return results[1]
+		
+	elseif #results > 1 then
+		return results
+	end
+	
+	return nil
 end
 
 function Signal:Wait(): any
