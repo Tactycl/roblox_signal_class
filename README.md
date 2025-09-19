@@ -39,7 +39,7 @@ The **Signal Class** is a lightweight utility designed to create **custom event 
   - Listeners are invoked in **priority order** if specified.  
 
 - **`:Invoke(...: any)`**  
-  Fires the set callback, passing any arguments provided.
+  Fires the set callback, passing any arguments provided, also returns the values returned by the callback function.
 
 - **`:Wait(): (...: any)`**  
   Yields until the signal is fired and **returns the arguments** passed to `:Fire`.  
