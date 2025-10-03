@@ -1,17 +1,16 @@
 --!strict
 
-export type Callback = (any) -> (any)
+type Callback = (any) -> (any)
+type Listener = {
+	callback: Callback,
+	connection: Connection,
+	priority: number,
+}
 
 export type Connection = {
 	_connected: boolean,
 	Connected: boolean,
 	Disconnect: (self: Connection) -> (),
-}
-
-export type Listener = {
-	callback: Callback,
-	connection: Connection,
-	priority: number,
 }
 
 export type Signal = {
