@@ -16,13 +16,10 @@ export type Listener = {
 
 export type Signal = {
 	_listeners: {Listener},
-	_callback: Callback?,
-	
+
 	Connect: (self: Signal, callback: () -> (), priority: number?) -> Connection,
 	Once: (self: Signal, callback: () -> ()) -> Connection,
 	Fire: (self: Signal, ...any) -> (),
-	Invoke: (self: Signal, ...any) -> (any),
-	SetCallback: (self: Signal, fn: (any) -> (any)) -> (),
 	Wait: (self: Signal) -> (...any),
 	DisconnectAll: (self: Signal) -> (),
 	HasConnections: (self: Signal) -> (boolean),
@@ -89,16 +86,6 @@ function Signal:Fire(...)
 			end
 		end, ...)
 	end
-end
-
-function Signal:Invoke(...)
-	if self._callback then
-		return self._callback(...)
-	end
-end
-
-function Signal:SetCallback(callback: Callback?)
-	self._callback = callback
 end
 
 function Signal:Wait(): any
