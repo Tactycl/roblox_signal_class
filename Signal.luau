@@ -31,9 +31,9 @@ local Signal = {}
 Signal.__index = Signal
 
 function Signal.new(): Signal
-	local self = setmetatable({}, Signal)
+	local self = (setmetatable({}, Signal):: unknown):: Signal
 	self._listeners = {}
-	return (self:: unknown):: Signal
+	return self
 end
 
 function Signal:Connect(callback: Callback, priority: number?): Connection
